@@ -37,10 +37,10 @@ class PostControllerTest {
                         MockMvcRequestBuilders.post("/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"title\": \"\", \"content\": \"내용입니다.\"}") // JSON 형태
-                ).andExpect(MockMvcResultMatchers.status().isOk())
-                // TODO : jsonPath에 대해 공부해보기
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Title 값은 필수입니다."))
+                ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.code").value("400"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.validation.title").value("title 값은 필수입니다."))
                 .andDo(MockMvcResultHandlers.print());
-
     }
 }
