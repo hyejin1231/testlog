@@ -1,7 +1,9 @@
 package com.test.testlog.contoller;
 
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.service.PostService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -22,14 +24,21 @@ import java.util.Map;
  * 5. 서버 개발자의 편안함을 위해
  */
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 public class PostController {
 
+    private final PostService postService;
+
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate params/*, BindingResult result*/) {
-        log.info("params={}", params);
+    public Map<String, String> post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
+        log.info("request={}", request);
+
+        postService.write(request);
+
+        return Map.of();
         /*
-        String title = params.getTitle();
+        String title = request.getTitle();
         if (title == null || title.equals("")) {  // 빈 String 값은 ? 더 검증해야 할게 생각보다 더 있을걸?
             // 이런 형태의 검증은 검증할 데이터가 많아지면 똑같은 코드가 너무 많이 들어가게 도니다.
             // -> 무언가 3번 이상 반복작업을 할 때 내가 뭔가 잘못하고 있는건 아닐지 의심한다. (개발 tip)
@@ -38,7 +47,7 @@ public class PostController {
             // -> 중요? 뭔가 개발자스럽지가 않다 ㅋㅋ
             throw new IllegalArgumentException("Title 값은 필수입니다.");
         }
-        String content = params.getContent();
+        String content = request.getContent();
         if (content == null || content.equals("")) {
             throw new IllegalArgumentException("");
         }
@@ -65,6 +74,5 @@ public class PostController {
         }
          */
 
-        return Map.of();
     }
 }
