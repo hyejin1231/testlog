@@ -1,5 +1,6 @@
 package com.test.testlog.contoller;
 
+import com.test.testlog.domain.Post;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.service.PostService;
 import jakarta.validation.Valid;
@@ -30,13 +31,21 @@ public class PostController {
 
     private final PostService postService;
 
+    /**
+     * Response 응답 형태
+     * case1. 저장한 데이터 Entity
+     * case2. 저장한 데이터의 primary_id
+     *  -> Client에서는 수신한 id를 글 조회 API를 통해서 데이터를 수신받음
+     * case3. 응답 필요 없음 -> 클라이언트에서 모든 글 데이터 context를 잘 관리함
+     * BAD CASE : 서버에서 @@@ 이렇게 할겁니다! 라고 고정하지 말기
+     *  -> 서버에서 차라리 유연하게 대응하는 것이 좋은데 대신 코드를 잘 짜야한다 ^^;
+     *  -> 한번에 일고라적으로 잘 처리되는 케이스는 없다. => 잘 관리하는 형태가 중요하다 !
+     */
     @PostMapping("/posts")
-    public Map<String, String> post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
+    public void post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
         log.info("request={}", request);
 
         postService.write(request);
-
-        return Map.of();
         /*
         String title = request.getTitle();
         if (title == null || title.equals("")) {  // 빈 String 값은 ? 더 검증해야 할게 생각보다 더 있을걸?

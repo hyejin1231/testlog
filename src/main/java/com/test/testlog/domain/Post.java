@@ -1,10 +1,7 @@
 package com.test.testlog.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 기본 생성자 넣어줘야함
@@ -20,6 +17,7 @@ public class Post {
     @Lob
     private String content;
 
+    @Builder
     public Post(String title, String content) {
         this.title = title;
         this.content = content;
