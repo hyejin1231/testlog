@@ -59,7 +59,7 @@ class PostControllerTest {
 //                                .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}") // JSON 형태
                                 .content(json)
                 ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string("{}"))
+                .andExpect(MockMvcResultMatchers.content().string(""))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -109,5 +109,26 @@ class PostControllerTest {
         Post post = postRepository.findAll().get(0);
         assertThat(post.getTitle()).isEqualTo("제목입니다.!!");
         assertThat(post.getContent()).isEqualTo("내용입니다.");
+    }
+
+    @Test
+    @DisplayName("글 1개 조회")
+    void get() throws Exception {
+        // given
+        Post givenPost = Post.builder()
+                .title("글 제목")
+                .content("글 내용")
+                .build();
+            postRepository.save(givenPost);
+
+        // when then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", givenPost.getId())
+                .contentType(APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(givenPost.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(givenPost.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(givenPost.getContent()))
+                .andDo(MockMvcResultHandlers.print());
+
     }
 }
