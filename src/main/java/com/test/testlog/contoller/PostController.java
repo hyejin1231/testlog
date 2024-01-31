@@ -2,6 +2,7 @@ package com.test.testlog.contoller;
 
 import com.test.testlog.domain.Post;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
 import jakarta.persistence.Lob;
 import jakarta.validation.Valid;
@@ -88,9 +89,9 @@ public class PostController {
      * /posts/{postId} : 글 한개 조회
      */
     @GetMapping("/posts/{postId}")
-    public Post get(@PathVariable(value = "postId") Long id) {
-        Post post = postService.get(id);
-        return post;
+    public PostResponse get(@PathVariable(value = "postId") Long id) {
+        PostResponse postResponse = postService.get(id);
+        return postResponse;
     }
 
 }

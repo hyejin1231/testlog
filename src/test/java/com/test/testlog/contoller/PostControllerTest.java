@@ -116,17 +116,19 @@ class PostControllerTest {
     void get() throws Exception {
         // given
         Post givenPost = Post.builder()
-                .title("글 제목")
+                .title("글 제목!~~~~~~~~~~~`")
                 .content("글 내용")
                 .build();
             postRepository.save(givenPost);
 
+        // 클라이언트 요구사항
+        // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
         // when then
         mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", givenPost.getId())
                 .contentType(APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(givenPost.getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(givenPost.getTitle()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(givenPost.getTitle().substring(0,10)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(givenPost.getContent()))
                 .andDo(MockMvcResultHandlers.print());
 

@@ -3,6 +3,7 @@ package com.test.testlog.service;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.response.PostResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,12 +58,15 @@ class PostServiceTest {
                 .build();
         Post post = postRepository.save(givenPost);
 
+        // 클라이언트 요구사항
+            // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
+
         // when
-        Post whenPost = postService.get(post.getId());
+        PostResponse response = postService.get(post.getId());
 
         // then
-        assertThat(whenPost.getTitle()).isEqualTo(givenPost.getTitle());
-        assertThat(whenPost.getContent()).isEqualTo(givenPost.getContent());
+        assertThat(response.getTitle()).isEqualTo(givenPost.getTitle());
+        assertThat(response.getContent()).isEqualTo(givenPost.getContent());
 
 
     }
