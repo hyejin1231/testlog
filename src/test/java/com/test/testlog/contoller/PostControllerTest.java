@@ -4,25 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
-import org.assertj.core.api.Assertions;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.MediaType.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -131,6 +126,38 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title").value(givenPost.getTitle().substring(0,10)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content").value(givenPost.getContent()))
                 .andDo(MockMvcResultHandlers.print());
+    }
 
+    @Test
+    @DisplayName("글 여러개 조회")
+    void getList() throws Exception {
+        // given
+        Post givenPost1 = Post.builder()
+                .title("글 제목 1 ~~~~~~~~~~")
+                .content("글 내용")
+                .build();
+        Post givenPost2 = Post.builder()
+                .title("글 제목 2 ~~~~~~~~~~~")
+                .content("글 내용")
+                .build();
+        Post givenPost3 = Post.builder()
+                .title("글 제목 3 ~~~~~~~~~~~")
+                .content("글 내용")
+                .build();
+        postRepository.save(givenPost1);
+        postRepository.save(givenPost2);
+        postRepository.save(givenPost3);
+
+        // 클라이언트 요구사항
+        // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
+        // when then
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+                        .contentType(APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(3)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(givenPost1.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("글 제목 1 ~~~~~~~~~~"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value(givenPost1.getContent()))
+                .andDo(MockMvcResultHandlers.print());
     }
 }

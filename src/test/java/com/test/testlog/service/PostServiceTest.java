@@ -4,16 +4,15 @@ import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.response.PostResponse;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class PostServiceTest {
@@ -67,6 +66,33 @@ class PostServiceTest {
         // then
         assertThat(response.getTitle()).isEqualTo(givenPost.getTitle());
         assertThat(response.getContent()).isEqualTo(givenPost.getContent());
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void getList() {
+        // given
+        Post givenPost1 = Post.builder()
+                .title("foo")
+                .content("bar")
+                .build();
+        Post givenPost2 = Post.builder()
+                .title("foo")
+                .content("bar")
+                .build();
+        Post givenPost3 = Post.builder()
+                .title("foo")
+                .content("bar")
+                .build();
+         postRepository.save(givenPost1);
+        postRepository.save(givenPost2);
+        postRepository.save(givenPost3);
+
+        // when
+        List<PostResponse> posts = postService.getList();
+
+        // then
+        assertThat(posts).hasSize(3);
 
 
     }

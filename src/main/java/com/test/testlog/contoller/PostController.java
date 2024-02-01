@@ -4,17 +4,13 @@ import com.test.testlog.domain.Post;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
-import jakarta.persistence.Lob;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * 2024.01.25 데이터를 검증하는 이유 -> 검증을 하면 안전하게 믿고 저장할 수 있다.
@@ -89,9 +85,20 @@ public class PostController {
      * /posts/{postId} : 글 한개 조회
      */
     @GetMapping("/posts/{postId}")
-    public PostResponse get(@PathVariable(value = "postId") Long id) {
-        PostResponse postResponse = postService.get(id);
-        return postResponse;
+    public PostResponse get(@PathVariable Long postId) {
+        return postService.get(postId);
     }
+
+    /**
+     * 조회 API
+     * 여러 개의 글을 조회하는 API
+     *
+     * @return
+     */
+    @GetMapping("/posts")
+    public List<PostResponse> getList() {
+        return postService.getList();
+    }
+
 
 }
