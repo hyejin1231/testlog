@@ -16,7 +16,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @AutoConfigureMockMvc
@@ -144,9 +147,7 @@ class PostControllerTest {
                 .title("글 제목 3 ~~~~~~~~~~~")
                 .content("글 내용")
                 .build();
-        postRepository.save(givenPost1);
-        postRepository.save(givenPost2);
-        postRepository.save(givenPost3);
+        postRepository.saveAll(List.of(givenPost1, givenPost2, givenPost3));
 
         // 클라이언트 요구사항
         // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
@@ -158,6 +159,12 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(givenPost1.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("글 제목 1 ~~~~~~~~~~"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].content").value(givenPost1.getContent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id").value(givenPost2.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].title").value("글 제목 2 ~~~~~~~~~~~"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].content").value(givenPost2.getContent()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(givenPost3.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].title").value("글 제목 3 ~~~~~~~~~~~"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].content").value(givenPost3.getContent()))
                 .andDo(MockMvcResultHandlers.print());
     }
 }
