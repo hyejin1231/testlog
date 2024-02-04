@@ -115,8 +115,8 @@ class PostServiceTest {
 
         // then
         assertThat(posts).hasSize(10);
-        assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 30");
-        assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 21");
+        assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 1");
+        assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 10");
 
     }
 }

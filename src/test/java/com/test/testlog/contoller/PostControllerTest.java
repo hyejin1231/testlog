@@ -185,10 +185,11 @@ class PostControllerTest {
         // 클라이언트 요구사항
         // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
         // when then
-        mockMvc.perform(MockMvcRequestBuilders.get("/v2/posts?page=1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/v2/posts?page=0")
                         .contentType(APPLICATION_JSON)
                 ).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("test 제목 - 1"))
                 .andDo(MockMvcResultHandlers.print());
     }
 }
