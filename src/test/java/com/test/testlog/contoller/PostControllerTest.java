@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
@@ -165,6 +167,28 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[2].id").value(givenPost3.getId()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[2].title").value("글 제목 3 ~~~~~~~~~~~"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[2].content").value(givenPost3.getContent()))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("글 1 페이지  조회")
+    void getOneList() throws Exception {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return
+                            Post.builder().title("test 제목 - " + i).content("test 내용 - " + i).build();
+                }).collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        // 클라이언트 요구사항
+        // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
+        // when then
+        mockMvc.perform(MockMvcRequestBuilders.get("/v2/posts?page=1")
+                        .contentType(APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
                 .andDo(MockMvcResultHandlers.print());
     }
 }

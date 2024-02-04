@@ -100,5 +100,11 @@ public class PostController {
         return postService.getList();
     }
 
+    @GetMapping("/v2/posts")
+    public List<PostResponse> getList(@RequestParam int page) {
+        return postService.getList(page);
+    }
+
+
 
 }

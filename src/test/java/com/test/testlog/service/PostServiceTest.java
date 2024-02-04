@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,6 +96,27 @@ class PostServiceTest {
         // then
         assertThat(posts).hasSize(3);
 
+    }
+
+    @Test
+    @DisplayName("글 1 페이지 조회")
+    void getOneList() {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return
+                            Post.builder().title("test 제목 - " + i).content("test 내용 - " + i).build();
+                }).collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        // when
+        List<PostResponse> posts = postService.getList(0);
+
+        // then
+        assertThat(posts).hasSize(10);
+        assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 30");
+        assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 21");
 
     }
 }
