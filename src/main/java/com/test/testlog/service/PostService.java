@@ -3,6 +3,7 @@ package com.test.testlog.service;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,6 +60,18 @@ public class PostService {
         Sort sort = Sort.by(Sort.Direction.ASC, "id");
         Pageable pageable = PageRequest.of(page, 10, sort);
         return postRepository.findAll(pageable).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostResponse> getListWithQueryDsl(int page) {
+        return postRepository.getList(1).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<PostResponse> getList(PostSearch postSearch) {
+        return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
     }

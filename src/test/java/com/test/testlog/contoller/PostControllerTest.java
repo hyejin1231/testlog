@@ -192,4 +192,27 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("test 제목 - 1"))
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    @DisplayName("글 1 페이지  조회")
+    void getOneListWithQueryDslAndPostSearch() throws Exception {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return
+                            Post.builder().title("test 제목 - " + i).content("test 내용 - " + i).build();
+                }).collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        // 클라이언트 요구사항
+        // json 응답에서 title 값 길이를 최대 10글자로 해주세요.
+        // when then
+        mockMvc.perform(MockMvcRequestBuilders.get("/v3/posts?page=0&size=10")
+                        .contentType(APPLICATION_JSON)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("test 제목 - 30"))
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

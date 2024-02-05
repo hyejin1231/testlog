@@ -2,6 +2,7 @@ package com.test.testlog.contoller;
 
 import com.test.testlog.domain.Post;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
 import jakarta.validation.Valid;
@@ -103,6 +104,11 @@ public class PostController {
     @GetMapping("/v2/posts")
     public List<PostResponse> getList(@RequestParam int page) {
         return postService.getList(page);
+    }
+
+    @GetMapping("/v3/posts")
+    public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
+        return postService.getList(postSearch);
     }
 
 

@@ -3,6 +3,7 @@ package com.test.testlog.service;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -117,6 +118,50 @@ class PostServiceTest {
         assertThat(posts).hasSize(10);
         assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 1");
         assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 10");
-
     }
+
+    @Test
+    @DisplayName("글 1 페이지 조회")
+    void getListWithQueryDsl() {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return
+                            Post.builder().title("test 제목 - " + i).content("test 내용 - " + i).build();
+                }).collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        // when
+        List<PostResponse> posts = postService.getListWithQueryDsl(0);
+
+        // then
+        assertThat(posts).hasSize(10);
+        assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 30");
+        assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 21");
+    }
+
+    @Test
+    @DisplayName("글 1 페이지 조회")
+    void getListWithQueryDslAndPostSearch() {
+        // given
+        List<Post> requestPosts = IntStream.range(1, 31)
+                .mapToObj(i -> {
+                    return
+                            Post.builder().title("test 제목 - " + i).content("test 내용 - " + i).build();
+                }).collect(Collectors.toList());
+
+        postRepository.saveAll(requestPosts);
+
+        PostSearch postSearch = PostSearch.builder().page(1).build();
+
+        // when
+        List<PostResponse> posts = postService.getList(postSearch);
+
+        // then
+        assertThat(posts).hasSize(10);
+        assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 30");
+        assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 21");
+    }
+
 }
