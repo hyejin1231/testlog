@@ -25,4 +25,27 @@ public class Post {
         this.title = title;
         this.content = content;
     }
+    
+    // setter 대신 change 메서드같은 걸 만들어서 사용하기
+    // 이렇게 String 두개를 파라미터로 받으면 파라미터가 여러개 되면 버그를 발견하기 어려워짐
+    // 이 방법도 괜찮지만 나중을 위해 다른 방법을 사용하기
+    public void change(String title, String content)
+    {
+        this.title = title;
+        this.content = content;
+    }
+    
+    public PostEditor.PostEditorBuilder toEditor()
+    {
+        return PostEditor.builder()
+                .title(title)
+                .content(content);
+    }
+    
+    public void edit(PostEditor postEditor)
+    {
+        this.title = postEditor.getTitle();
+        this.content = postEditor.getContent();
+    }
 }
+

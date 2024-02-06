@@ -1,8 +1,10 @@
 package com.test.testlog.service;
 
 import com.test.testlog.domain.Post;
+import com.test.testlog.domain.PostEditor;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,5 +77,22 @@ public class PostService {
         return postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public PostResponse edit(Long id, PostEdit postEdit)
+    {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        
+//        post.change(postEdit.getTitle(), postEdit.getContent());
+        
+        PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
+        PostEditor postEditor = postEditorBuilder.title(postEdit.getTitle())
+                .content(postEdit.getContent()).build();
+        
+        post.edit(postEditor);
+        
+        return new PostResponse(post);
     }
 }

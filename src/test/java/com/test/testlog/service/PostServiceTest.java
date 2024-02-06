@@ -3,8 +3,11 @@ package com.test.testlog.service;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -163,5 +167,57 @@ class PostServiceTest {
         assertThat(posts.get(0).getTitle()).isEqualTo("test 제목 - 30");
         assertThat(posts.get(9).getTitle()).isEqualTo("test 제목 - 21");
     }
+    
+    
+    @Test
+    @DisplayName("글 제목 수정 테스트")
+    void edit() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        
+        postRepository.save(post);
+        
+        // when
+        PostEdit postEdit = PostEdit.builder()
+                .title("testLog edit")
+                .content("test log content")
+                .build();
+        
+        postService.edit(post.getId(), postEdit);
+        
+        // then
+        Post editPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException(post.getId() + " 해당 글이 존재하지 않습니다."));
+        assertThat(editPost.getTitle()).isEqualTo("testLog edit");
+        assertThat(editPost.getContent()).isEqualTo("test log content");
+    }
+    
+    @Test
+    @DisplayName("글 내용 수정 테스트")
+    void contentEdit() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        
+        postRepository.save(post);
+        
+        // when
+        PostEdit postEdit = PostEdit.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        
+        postService.edit(post.getId(), postEdit);
+        
+        // then
+        Post editPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException(post.getId() + " 해당 글이 존재하지 않습니다."));
+        assertThat(editPost.getTitle()).isEqualTo("testLog");
+        assertThat(editPost.getContent()).isEqualTo("test log content");
+    }
+    
 
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostEdit;
+
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -214,5 +217,25 @@ class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.length()", Matchers.is(10)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title").value("test 제목 - 30"))
                 .andDo(MockMvcResultHandlers.print());
+    }
+    
+    @Test
+    @DisplayName("글 제목 수정")
+    void edit() throws Exception
+    {
+        Post post = Post.builder()
+                .title("글 제목")
+                .content("글 내용")
+                .build();
+        postRepository.save(post);
+        
+        PostEdit postEdit = PostEdit.builder().title("글 제목 수정").content("글 내용").build();
+        
+        mockMvc.perform(MockMvcRequestBuilders.patch("/posts/{postId}", post.getId())
+                                .contentType(APPLICATION_JSON).content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("글 제목 수정"))
+                .andDo(MockMvcResultHandlers.print());
+        
     }
 }

@@ -1,7 +1,9 @@
 package com.test.testlog.contoller;
 
 import com.test.testlog.domain.Post;
+import com.test.testlog.domain.PostEditor;
 import com.test.testlog.request.PostCreate;
+import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
@@ -109,6 +111,12 @@ public class PostController {
     @GetMapping("/v3/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
+    }
+    
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit)
+    {
+        return postService.edit(postId, postEdit);
     }
 
 
