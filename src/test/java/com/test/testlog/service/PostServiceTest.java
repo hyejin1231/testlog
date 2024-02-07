@@ -219,5 +219,29 @@ class PostServiceTest {
         assertThat(editPost.getContent()).isEqualTo("test log content");
     }
     
+    @Test
+    @DisplayName("글 내용 수정 테스트")
+    void contentEdit2() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        
+        postRepository.save(post);
+        
+        // when
+        PostEdit postEdit = PostEdit.builder()
+                .content("test log content")
+                .build();
+        
+        postService.edit(post.getId(), postEdit);
+        
+        // then
+        Post editPost = postRepository.findById(post.getId()).orElseThrow(() -> new RuntimeException(post.getId() + " 해당 글이 존재하지 않습니다."));
+        assertThat(editPost.getTitle()).isEqualTo("testLog");
+        assertThat(editPost.getContent()).isEqualTo("test log content");
+    }
+    
 
 }
