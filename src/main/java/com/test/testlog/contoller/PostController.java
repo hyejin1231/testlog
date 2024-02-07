@@ -113,12 +113,29 @@ public class PostController {
         return postService.getList(postSearch);
     }
     
+    /**
+     * 게시글 수정
+     * @param postId
+     * @param postEdit
+     * @return
+     */
     @PatchMapping("/posts/{postId}")
     public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit)
     {
         return postService.edit(postId, postEdit);
     }
+    
+    /**
+     * 게시글 삭제
+     * @param postId
+     */
+    @DeleteMapping("/posts/{postId}")
+    public void delete(@PathVariable Long postId)
+    {
+        postService.delete(postId);
+    }
 
+    // TODO 인증, 예외 처리...
 
 
 }

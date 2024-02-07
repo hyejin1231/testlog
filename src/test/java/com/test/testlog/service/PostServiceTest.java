@@ -243,5 +243,24 @@ class PostServiceTest {
         assertThat(editPost.getContent()).isEqualTo("test log content");
     }
     
+    
+    @DisplayName("게시글 삭제")
+    @Test
+    void delete() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        postRepository.save(post);
+        
+        // when
+        postService.delete(post.getId());
+        
+        // then
+        long count = postRepository.count();
+        assertThat(count).isEqualTo(0);
+    }
+    
 
 }
