@@ -1,6 +1,7 @@
 package com.test.testlog.service;
 
 import com.test.testlog.domain.Post;
+import com.test.testlog.exception.PostNotFound;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
@@ -74,7 +75,23 @@ class PostServiceTest {
         assertThat(response.getTitle()).isEqualTo(givenPost.getTitle());
         assertThat(response.getContent()).isEqualTo(givenPost.getContent());
     }
-
+    
+    
+    @DisplayName("글 1개를 조회하는데 없는 blogId 를 조회하면 오류가 발생한다.")
+    @Test
+    void getWithNoBlogId() {
+        // given
+        Post post = Post.builder().title("제목 1").content("내용 1").build();
+        postRepository.save(post);
+        
+        // when then
+        Assertions.assertThatThrownBy(() -> {
+                    postService.get(2L);
+//                }).isInstanceOf(IllegalArgumentException.class)
+                }).isInstanceOf(PostNotFound.class)
+                .hasMessage("존재하지 않는 글입니다.");
+    }
+    
     @Test
     @DisplayName("글 여러개 조회")
     void getList() {
@@ -243,6 +260,28 @@ class PostServiceTest {
         assertThat(editPost.getContent()).isEqualTo("test log content");
     }
     
+    @Test
+    @DisplayName("존재하지 않는 글 내용 수정 테스트")
+    void EditWhenNoBlog() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        
+        postRepository.save(post);
+        
+        // when
+        PostEdit postEdit = PostEdit.builder()
+                .content("test log content")
+                .build();
+        
+        // then
+        assertThatThrownBy(() -> {
+            postService.edit(post.getId() + 1, postEdit);
+        }).isInstanceOf(PostNotFound.class).hasMessage("존재하지 않는 글입니다.");
+    }
+    
     
     @DisplayName("게시글 삭제")
     @Test
@@ -260,6 +299,25 @@ class PostServiceTest {
         // then
         long count = postRepository.count();
         assertThat(count).isEqualTo(0);
+    }
+    
+    @DisplayName("존재하지 않는 게시글 삭제")
+    @Test
+    void deleteWhenNoBlog() {
+        // given
+        Post post = Post.builder()
+                .title("testLog")
+                .content("test log content")
+                .build();
+        postRepository.save(post);
+        
+        // when
+        postService.delete(post.getId());
+        
+        // then
+        assertThatThrownBy(() -> {
+            postService.get(post.getId() + 1L);
+        }).isInstanceOf(PostNotFound.class).hasMessage("존재하지 않는 글입니다.");
     }
     
 

@@ -2,6 +2,7 @@ package com.test.testlog.service;
 
 import com.test.testlog.domain.Post;
 import com.test.testlog.domain.PostEditor;
+import com.test.testlog.exception.PostNotFound;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
@@ -34,7 +35,8 @@ public class PostService {
 
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+                .orElseThrow(PostNotFound::new);
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
 
 
         return PostResponse.builder()
@@ -83,8 +85,9 @@ public class PostService {
     public PostResponse edit(Long id, PostEdit postEdit)
     {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
-        
+                .orElseThrow(PostNotFound::new);
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
 //        post.change(postEdit.getTitle(), postEdit.getContent());
         
         PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
@@ -98,8 +101,8 @@ public class PostService {
     
     public void delete(Long postId)
     {
-        Post post = postRepository.findById(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 글입니다."));
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFound::new);
+//                () -> new IllegalArgumentException("존재하지 않는 글입니다."));
         
         postRepository.delete(post);
     }
