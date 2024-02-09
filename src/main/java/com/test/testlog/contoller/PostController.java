@@ -2,6 +2,7 @@ package com.test.testlog.contoller;
 
 import java.util.List;
 
+import com.test.testlog.exception.InvalidRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -50,8 +51,7 @@ public class PostController {
      */
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
-        log.info("request={}", request);
-
+        request.validate();
         postService.write(request);
         /*
         String title = request.getTitle();

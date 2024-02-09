@@ -5,7 +5,6 @@ import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -24,7 +22,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.InstanceOfAssertFactories.LIST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @AutoConfigureMockMvc
@@ -257,6 +254,47 @@ class PostControllerTest {
                                 .contentType(APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-        
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void getNoPost() throws Exception {
+        mockMvc.perform(
+                        MockMvcRequestBuilders.get("/posts/{postId}", 1L)
+                                .contentType(APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 수정")
+    void editNoPost() throws Exception {
+
+        PostEdit postEdit = PostEdit.builder().title("글 제목 수정").content("글 내용").build();
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.patch("/posts/{postId}", 1L)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(postEdit)))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    @DisplayName("게시글 작성 시, 제목에 '바보' 단어는 포함될 수 없다.")
+    void postsNotContainsTitleWord() throws Exception {
+        // given
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다. 바보")
+                .content("내용입니다.")
+                .build();
+        String json = objectMapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/posts")
+                                .contentType(APPLICATION_JSON)
+                                .content(json)
+                ).andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andDo(MockMvcResultHandlers.print());
     }
 }
