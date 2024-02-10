@@ -31,6 +31,15 @@ import lombok.extern.slf4j.Slf4j;
  * 3. 외부에 나쁜 사람이 값을 의미로 조작해서 보낼 수 있다.
  * 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할 수 있다.
  * 5. 서버 개발자의 편안함을 위해
+ *
+ * TODO 인증, 예외 처리...
+ *
+ * 2024.02.10 API 문서 생성 -> 클라이언트 입장에서는 어떤 API 가 있는지 모른다.
+ * Spring RestDocs
+ * 장점 :
+ * 운영 코드에 영향 x, 단순히 테스트 케이스만으로도 문서르 작성할 수 있다.
+ * 코드 수정했는데 문서 수정 안하면 코드와 문서가 일치하지 않아 신뢰가 점점 사라진다.
+ * 테스트 케이스 실행, 통과 후 문서를 생성해준다.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -142,8 +151,5 @@ public class PostController {
     {
         postService.delete(postId);
     }
-
-    // TODO 인증, 예외 처리...
-
 
 }

@@ -2,6 +2,8 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.2'
 	id 'io.spring.dependency-management' version '1.1.4'
+
+	id "org.asciidoctor.jvm.convert" version "3.3.2" // AsciiDoc 문법으로 작성하면 Asciidoctor를 이용해서 html로 변환해준다.
 }
 
 group = 'com.test'
@@ -15,6 +17,7 @@ configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	asciidoctorExt
 }
 
 repositories {
@@ -36,8 +39,36 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// RestDocs
+	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+ext { // 전역 변수
+	snippetsDir = file('build/generated-snippets') // 문서의 조각조각들을 snipppets라고 하고, 그 스니펙에 대한 디렉토리를 정의함
+}
+
+test {
+	outputs.dir snippetsDir // 테스트의 결과를 snippetsDir에 저장한다.
+}
+
+asciidoctor {
+	inputs.dir snippetsDir
+	configurations 'asciidoctorExt'
+	dependsOn test // test 수행한 다음에 asciidoctor를 수행한다.
+}
+
+bootJar {
+	dependsOn asciidoctor
+
+	copy {
+		from asciidoctor.outputDir
+		into 'src/main/resources/static/docs'
+	}
+
 }
