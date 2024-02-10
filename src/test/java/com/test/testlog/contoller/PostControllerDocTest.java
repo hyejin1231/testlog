@@ -17,6 +17,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -61,7 +62,7 @@ public class PostControllerDocTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andDo(MockMvcRestDocumentation.document("index",
+                .andDo(MockMvcRestDocumentation.document("post-inquiry",
                         RequestDocumentation.pathParameters(
                                 RequestDocumentation.parameterWithName("postId").description("게시글 ID")
                         ),
@@ -90,10 +91,10 @@ public class PostControllerDocTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk())
-                .andDo(MockMvcRestDocumentation.document("index",
+                .andDo(MockMvcRestDocumentation.document("post-create",
                         PayloadDocumentation.requestFields(
-                                PayloadDocumentation.fieldWithPath("title").description("게시글 제목"),
-                                PayloadDocumentation.fieldWithPath("content").description("게시글 내용")
+                                PayloadDocumentation.fieldWithPath("title").description("게시글 제목").attributes(Attributes.key("constraint").value("제목엔 '바보' 단어를 포함할 수 없습니다.")),
+                                PayloadDocumentation.fieldWithPath("content").description("게시글 내용").optional()
                         )
                 ));
     }
