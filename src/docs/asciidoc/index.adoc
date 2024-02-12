@@ -1,4 +1,4 @@
-= TestLog API징
+= TestLog API
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
