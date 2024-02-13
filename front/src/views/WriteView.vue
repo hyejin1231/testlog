@@ -4,16 +4,21 @@ import {ref} from "vue";
 // const axios = require('axios').default;
 
 import axios from "axios";
+import {useRouter} from "vue-router";
 
 const count = ref(0) // 반응형으로 변수 만들기
 
 const title = ref("")
 const content = ref("")
 
+const router = useRouter()
+
 const write = function () {
   console.log(title.value + " / " + content.value)
   axios.post("/api/posts", {
     title: title.value, content: content.value
+  }).then(() => {
+        router.replace({name: "home"})
   })
 };
 </script>
