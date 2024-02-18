@@ -64,6 +64,7 @@ asciidoctor {
 }
 
 bootJar {
+	enabled = true
 	dependsOn asciidoctor
 
 	copy {
@@ -71,4 +72,8 @@ bootJar {
 		into 'src/main/resources/static/docs'
 	}
 
+}
+
+jar {
+	enabled = false
 }
