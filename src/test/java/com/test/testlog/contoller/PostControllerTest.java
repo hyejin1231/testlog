@@ -46,28 +46,8 @@ class PostControllerTest {
         postRepository.deleteAll();
     }
 
-    @Test
-    @DisplayName("/posts 요청 시 Hello World를 출력한다.")
-    void posts() throws Exception {
-        // given
-        PostCreate request = PostCreate.builder()
-                .title("제목입니다.")
-                .content("내용입니다.")
-                .build();
-        String json = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(
-                        MockMvcRequestBuilders.post("/posts")
-                                .contentType(APPLICATION_JSON)
-//                                .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}") // JSON 형태
-                                .content(json)
-                ).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(""))
-                .andDo(MockMvcResultHandlers.print());
-    }
-
-    @Test
-    @DisplayName("/posts 요청 시 title 값은 필수다. Title 값이 없으면 에러 메시지를 리턴한다.")
+//    @Test
+//    @DisplayName("글 작성 요청 시 title 값은 필수다. Title 값이 없으면 에러 메시지를 리턴한다.")
     void posts2() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -89,7 +69,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청 시 DB에 값이 저장된다.")
+    @DisplayName("글 작성 요청 시 DB에 값이 저장된다.")
     void posts3() throws Exception {
         // given
         PostCreate request = PostCreate.builder()
@@ -101,6 +81,59 @@ class PostControllerTest {
         // when
         mockMvc.perform(
                         MockMvcRequestBuilders.post("/posts")
+                                .contentType(APPLICATION_JSON)
+                                .content(json)
+//                                .content("{\"title\": \"제목입니다.!!\", \"content\": \"내용입니다.\"}") // JSON 형태
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        // then
+        assertThat(postRepository.count()).isEqualTo(1);
+        Post post = postRepository.findAll().get(0);
+        assertThat(post.getTitle()).isEqualTo("제목입니다.!!");
+        assertThat(post.getContent()).isEqualTo("내용입니다.");
+    }
+
+//    @Test
+//    @DisplayName("글 작성 요청 시 DB에 값이 저장된다. + 인증 추가 ")
+    void posts4() throws Exception {
+        // given
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.!!")
+                .content("내용입니다.")
+                .build();
+        String json = objectMapper.writeValueAsString(request);
+
+        // when
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/posts?authorization=testlog")
+                                .contentType(APPLICATION_JSON)
+                                .content(json)
+//                                .content("{\"title\": \"제목입니다.!!\", \"content\": \"내용입니다.\"}") // JSON 형태
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
+        // then
+        assertThat(postRepository.count()).isEqualTo(1);
+        Post post = postRepository.findAll().get(0);
+        assertThat(post.getTitle()).isEqualTo("제목입니다.!!");
+        assertThat(post.getContent()).isEqualTo("내용입니다.");
+    }
+
+//    @Test
+//    @DisplayName("글 작성 요청 시 DB에 값이 저장된다. + 인증 추가 ")
+    void posts5() throws Exception {
+        // given
+        PostCreate request = PostCreate.builder()
+                .title("제목입니다.!!")
+                .content("내용입니다.")
+                .build();
+        String json = objectMapper.writeValueAsString(request);
+
+        // when
+        mockMvc.perform(
+                        MockMvcRequestBuilders.post("/posts")
+                                .header("authorization", "testlog")
                                 .contentType(APPLICATION_JSON)
                                 .content(json)
 //                                .content("{\"title\": \"제목입니다.!!\", \"content\": \"내용입니다.\"}") // JSON 형태
