@@ -5,6 +5,8 @@ import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +39,9 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/test")
-    public String  test() {
-        return "test";
-    }
-
     @GetMapping("/welcome")
-    public String welcome() {
+    public String welcome(@RequestAttribute("userName") String userName) {
+        log.info(">>> {}", userName);
         return "welcome!";
     }
 

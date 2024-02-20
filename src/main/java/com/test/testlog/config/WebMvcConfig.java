@@ -10,6 +10,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor())
-                .excludePathPatterns("/welcome");
+                .excludePathPatterns("/error", "/favicon.ico"); // 인증이 없어도 접근 가능해야 함
     }
 }
