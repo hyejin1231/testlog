@@ -6,13 +6,21 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.test.testlog.config.data.UserSession;
+import com.test.testlog.exception.UnAuthorized;
+
+/**
+ * 2024.02.20
+ * 섹션6. API 인증 시작 (2)
+ * : ArgumentResolver 사용해보기
+ */
 public class AuthResolver implements HandlerMethodArgumentResolver
 {
-	
 	@Override
 	public boolean supportsParameter(MethodParameter parameter)
 	{
-		return false;
+		// 1) 메서드의 파라미터 값으로 UserSession 값이 있는지 확인
+		return parameter.getParameterType().equals(UserSession.class);
 	}
 	
 	@Override
@@ -20,6 +28,14 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 			ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception
 	{
-		return null;
+		// 2) 있다면 request에서 accessToken 값을 가져와 Userssion의 name 값에 넣어줌
+		String accessToken = webRequest.getParameter("accessToken");
+		if (accessToken == null || accessToken.isEmpty()) {
+			throw new UnAuthorized();
+		}
+		
+		UserSession userSession = new UserSession();
+		userSession.setName(accessToken);
+		return userSession;
 	}
 }

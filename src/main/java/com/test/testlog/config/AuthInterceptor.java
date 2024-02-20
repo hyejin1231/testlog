@@ -9,8 +9,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 2024.02.19
- * 섹션6. API 인증 시작
+ * 섹션6. API 인증 시작 (1)
+ * : Interceptor 사용해보기
+ * 우리 프로젝트에서는 AuthInterceptor를 사용하지 않을 예정
  */
+@Deprecated
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
     @Override

@@ -1,5 +1,6 @@
 package com.test.testlog.contoller;
 
+import com.test.testlog.config.data.UserSession;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
@@ -40,9 +41,15 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping("/welcome")
-    public String welcome(@RequestAttribute("userName") String userName) {
-        log.info(">>> {}", userName);
-        return "welcome!";
+    public String welcome() {
+        return "welcome";
+    }
+    
+    @GetMapping("/hello")
+    public String hello(UserSession session)
+    {
+        log.info(">>> {}", session.getName());
+        return session.getName() ;
     }
 
     /**
