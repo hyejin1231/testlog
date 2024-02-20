@@ -1,0 +1,4 @@
+### 테스트 요청
+GET http://localhost:8080/hello
+Content-Type: application/json
+Authorization: testlog

@@ -29,13 +29,14 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 			WebDataBinderFactory binderFactory) throws Exception
 	{
 		// 2) 있다면 request에서 accessToken 값을 가져와 Userssion의 name 값에 넣어줌
-		String accessToken = webRequest.getParameter("accessToken");
+		String accessToken = webRequest.getHeader("Authorization"); // getParameter -> getHeader, accessToken -> Authorization
 		if (accessToken == null || accessToken.isEmpty()) {
 			throw new UnAuthorized();
 		}
 		
-		UserSession userSession = new UserSession();
-		userSession.setName(accessToken);
-		return userSession;
+		// 데이터베이스 사용자 확인 작업
+		// ...
+		
+		return new UserSession(1L);
 	}
 }

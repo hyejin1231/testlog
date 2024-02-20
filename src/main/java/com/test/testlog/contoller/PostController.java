@@ -7,7 +7,6 @@ import com.test.testlog.request.PostSearch;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,16 +39,18 @@ public class PostController {
 
     private final PostService postService;
 
+    // 인증 과정이 필요없는 페이지
     @GetMapping("/welcome")
     public String welcome() {
         return "welcome";
     }
     
+    // 인증 과정이 필요한 페이지
     @GetMapping("/hello")
-    public String hello(UserSession session)
+    public Long hello(UserSession session)
     {
-        log.info(">>> {}", session.getName());
-        return session.getName() ;
+        log.info(">>> {}", session.getId());
+        return session.getId() ;
     }
 
     /**
