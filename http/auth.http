@@ -6,3 +6,8 @@ Content-Type: application/json
   "email": "testlog@gmail.com",
   "password" : "1234"
 }
+
+### 인증 페이지 요청
+GET http://localhost:8080/hello
+Content-Type: application/json
+Cookie: SESSION=fcffe94e-ab1e-40fe-859f-b3817b2a20ee

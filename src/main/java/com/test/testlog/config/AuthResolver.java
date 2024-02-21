@@ -13,13 +13,17 @@ import com.test.testlog.domain.Session;
 import com.test.testlog.exception.UnAuthorized;
 import com.test.testlog.repository.SessionRepository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 2024.02.20
  * 섹션6. API 인증 시작 (2)
  * : ArgumentResolver 사용해보기
  */
+@Slf4j
 @RequiredArgsConstructor
 public class AuthResolver implements HandlerMethodArgumentResolver
 {
@@ -38,10 +42,24 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 			WebDataBinderFactory binderFactory) throws Exception
 	{
 		// 2) 있다면 request에서 accessToken 값을 가져와 Userssion의 name 값에 넣어줌
-		String accessToken = webRequest.getHeader("Authorization"); // getParameter -> getHeader, accessToken -> Authorization
-		if (accessToken == null || accessToken.isEmpty()) {
+		// String accessToken = webRequest.getHeader("Authorization"); // getParameter -> getHeader, accessToken -> Authorization
+		//		if (accessToken == null || accessToken.isEmpty()) {
+		//			throw new UnAuthorized();
+		//		}
+		
+		HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
+		if (servletRequest == null)
+		{
+			log.error("servletRequest null");
 			throw new UnAuthorized();
 		}
+		Cookie[] cookies = servletRequest.getCookies();
+		if (cookies.length == 0) {
+			log.error("쿠키가 없음");
+			throw new UnAuthorized();
+		}
+		
+		String accessToken = cookies[0].getValue();
 		
 		// 데이터베이스 사용자 확인 작업
 		Session session = sessionRepository.findByAccessToken(accessToken).orElseThrow(UnAuthorized::new);
