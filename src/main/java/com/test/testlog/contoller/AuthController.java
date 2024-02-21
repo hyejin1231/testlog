@@ -4,10 +4,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.test.testlog.domain.User;
-import com.test.testlog.exception.InvalidSigningInformation;
-import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.Login;
+import com.test.testlog.response.SessionResponse;
+import com.test.testlog.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,20 +17,19 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController
 {
 	
-	private final UserRepository userRepository;
+	private final AuthService authService;
 	
 	@PostMapping("/auth/login")
-	public User login(@RequestBody Login login)
+	public SessionResponse login(@RequestBody Login login)
 	{
 		// 1) json 으로 아이디/비밀번호
 		log.info(">>> login = {}", login);
 		
 		// 2) DB에서 조회
-		User user = userRepository.findByEmailAndPassword(
-						login.getEmail(), login.getPassword()).orElseThrow(InvalidSigningInformation::new);
+		String accessToken = authService.signIn(login);
 		
 		// 3) token 응답
-		return user;
+		return new SessionResponse(accessToken);
 	}
 	
 }
