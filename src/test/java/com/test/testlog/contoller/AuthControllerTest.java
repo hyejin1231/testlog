@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.testlog.domain.Session;
 import com.test.testlog.domain.User;
 import com.test.testlog.repository.SessionRepository;
 import com.test.testlog.repository.UserRepository;
@@ -118,7 +119,43 @@ class AuthControllerTest
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.accessToken", Matchers.notNullValue()))
 				.andDo(MockMvcResultHandlers.print());
+	}
+	
+	@DisplayName("로그인 성공 후 권한이 필요한 페이지로 접속")
+	@Test
+	void loginAndDirectByAuthPage() throws Exception
+	{
+		// given
+		User user = User.builder().email("testlog@gmail.com").password("1234") // 사실 비밀번호는 평문으로 하는 건 좋지않다.. 암호화 알아보기 ?
+				.name("test")
+				.build();
+		Session session = user.addSession();
+		userRepository.save(user);
 		
+		// when.. then
+		mockMvc.perform(MockMvcRequestBuilders.get("/hello")
+								.header("Authorization", session.getAccessToken())
+								.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andDo(MockMvcResultHandlers.print());
+	}
+	
+	@DisplayName("로그인 성공 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")
+	@Test
+	void noAuthLoginAndDirectByAuthPage() throws Exception
+	{
+		// given
+		User user = User.builder().email("testlog@gmail.com").password("1234") // 사실 비밀번호는 평문으로 하는 건 좋지않다.. 암호화 알아보기 ?
+				.name("test")
+				.build();
+		Session session = user.addSession();
+		userRepository.save(user);
 		
+		// when.. then
+		mockMvc.perform(MockMvcRequestBuilders.get("/hello")
+								.header("Authorization", session.getAccessToken() +"-asdf")
+								.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andDo(MockMvcResultHandlers.print());
 	}
 }

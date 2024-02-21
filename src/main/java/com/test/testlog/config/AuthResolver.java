@@ -1,5 +1,7 @@
 package com.test.testlog.config;
 
+import java.util.Optional;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -7,15 +9,22 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.test.testlog.config.data.UserSession;
+import com.test.testlog.domain.Session;
 import com.test.testlog.exception.UnAuthorized;
+import com.test.testlog.repository.SessionRepository;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 2024.02.20
  * 섹션6. API 인증 시작 (2)
  * : ArgumentResolver 사용해보기
  */
+@RequiredArgsConstructor
 public class AuthResolver implements HandlerMethodArgumentResolver
 {
+	private final SessionRepository sessionRepository;
+	
 	@Override
 	public boolean supportsParameter(MethodParameter parameter)
 	{
@@ -35,8 +44,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 		}
 		
 		// 데이터베이스 사용자 확인 작업
-		// ...
+		Session session = sessionRepository.findByAccessToken(accessToken).orElseThrow(UnAuthorized::new);
 		
-		return new UserSession(1L);
+		return new UserSession(session.getUser().getId());
 	}
 }

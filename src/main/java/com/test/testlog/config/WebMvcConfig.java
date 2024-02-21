@@ -7,9 +7,15 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.test.testlog.repository.SessionRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-
+    
+    private final SessionRepository sessionRepository;
     /*
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -21,6 +27,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers)
     {
-        resolvers.add(new AuthResolver());
+        resolvers.add(new AuthResolver(sessionRepository));
     }
 }
