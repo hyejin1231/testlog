@@ -1,17 +1,16 @@
 package com.test.testlog.contoller;
 
-import java.time.Duration;
 import java.util.Base64;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.test.testlog.config.data.AppConfig;
 import com.test.testlog.request.Login;
 import com.test.testlog.response.SessionResponse;
 import com.test.testlog.service.AuthService;
@@ -29,8 +28,10 @@ public class AuthController
 	
 	private final AuthService authService;
 	
+	private final AppConfig appConfig;
+	
 	// 공용키 생성 -> 키를 매번 다이나믹하게 생성해서 암호화하면 로그인할 때
-	private final String KEY = "6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8="; // 유출되면 안됨 !!
+//	private final String KEY = "6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8="; // 유출되면 안됨 !!
 	
 	/**
 	 * 로그인 1. 세션토큰 발급 직접 (UUID)
@@ -80,7 +81,7 @@ public class AuthController
 //		byte[] encodedKey = key.getEncoded();
 //		String strKey = Base64.getEncoder().encodeToString(encodedKey);
 		
-		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
 		
 		String jws = Jwts.builder().subject(String.valueOf(userId)).signWith(secretKey).compact();
 		

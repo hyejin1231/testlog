@@ -11,6 +11,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import com.test.testlog.config.data.AppConfig;
 import com.test.testlog.config.data.UserSession;
 import com.test.testlog.domain.Session;
 import com.test.testlog.exception.UnAuthorized;
@@ -36,7 +37,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthResolver implements HandlerMethodArgumentResolver
 {
 	private final SessionRepository sessionRepository;
-	private static final String KEY = "6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8="; // 유출되면 안됨 !!
+	
+	private final AppConfig appConfig;
+//	private static final String KEY = "6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8="; // 유출되면 안됨 !!
 	
 	@Override
 	public boolean supportsParameter(MethodParameter parameter)
@@ -83,7 +86,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 			throw new UnAuthorized();
 		}
 		
-		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+//		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
 		
 		try {
 			Jws<Claims> claimsJws = Jwts.parser()
