@@ -1,7 +1,8 @@
 package com.test.testlog.config.data;
 
+import java.util.Base64;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,5 +12,10 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "testlog")
 public class AppConfig
 {
-	public String secretKey;
+	private byte[] secretKey;
+	
+	public void setSecretKey(String secretKey)
+	{
+		this.secretKey = Base64.getDecoder().decode(secretKey);
+	}
 }

@@ -87,7 +87,8 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 		}
 		
 //		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
-		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
+//		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
+		SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getSecretKey());
 		
 		try {
 			Jws<Claims> claimsJws = Jwts.parser()

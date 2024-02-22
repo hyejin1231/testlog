@@ -1,6 +1,7 @@
 package com.test.testlog.contoller;
 
 import java.util.Base64;
+import java.util.Date;
 
 import javax.crypto.SecretKey;
 
@@ -81,9 +82,12 @@ public class AuthController
 //		byte[] encodedKey = key.getEncoded();
 //		String strKey = Base64.getEncoder().encodeToString(encodedKey);
 		
-		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
+//		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(appConfig.getSecretKey()));
+		SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getSecretKey());
 		
-		String jws = Jwts.builder().subject(String.valueOf(userId)).signWith(secretKey).compact();
+		// TODO Expire 도 넣어서 AuthResolver에서 체크하는 방법 알아보기
+		String jws = Jwts.builder().subject(String.valueOf(userId))
+				.signWith(secretKey).setIssuedAt(new Date()).compact();
 		
 		return new SessionResponse(jws);
 	}
