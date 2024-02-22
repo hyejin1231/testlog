@@ -19,7 +19,7 @@ public class AuthService
 	
 	
 	@Transactional
-	public String signIn(Login login)
+	public Long signIn(Login login)
 	{
 		// 로그인 처리
 		User user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword()).orElseThrow(InvalidSigningInformation::new);
@@ -27,6 +27,7 @@ public class AuthService
 		// 로그인 처리 되면 세션 발급
 		Session session = user.addSession();
 		
-		return session.getAccessToken();
+//		return session.getAccessToken();
+		return user.getId();
 	}
 }

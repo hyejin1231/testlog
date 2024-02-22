@@ -1,6 +1,9 @@
 package com.test.testlog.config;
 
+import java.util.Base64;
 import java.util.Optional;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -13,6 +16,11 @@ import com.test.testlog.domain.Session;
 import com.test.testlog.exception.UnAuthorized;
 import com.test.testlog.repository.SessionRepository;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthResolver implements HandlerMethodArgumentResolver
 {
 	private final SessionRepository sessionRepository;
+	private static final String KEY = "6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8="; // 유출되면 안됨 !!
 	
 	@Override
 	public boolean supportsParameter(MethodParameter parameter)
@@ -42,11 +51,15 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 			WebDataBinderFactory binderFactory) throws Exception
 	{
 		// 2) 있다면 request에서 accessToken 값을 가져와 Userssion의 name 값에 넣어줌
-		// String accessToken = webRequest.getHeader("Authorization"); // getParameter -> getHeader, accessToken -> Authorization
-		//		if (accessToken == null || accessToken.isEmpty()) {
-		//			throw new UnAuthorized();
-		//		}
 		
+		/* v1. Header에 생성된 Authorization 에 accessToken 담아서 인증
+		 String accessToken = webRequest.getHeader("Authorization"); // getParameter -> getHeader, accessToken -> Authorization
+				if (accessToken == null || accessToken.isEmpty()) {
+					throw new UnAuthorized();
+				}
+		 */
+		
+		/* v2. cookie 인증
 		HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
 		if (servletRequest == null)
 		{
@@ -63,7 +76,29 @@ public class AuthResolver implements HandlerMethodArgumentResolver
 		
 		// 데이터베이스 사용자 확인 작업
 		Session session = sessionRepository.findByAccessToken(accessToken).orElseThrow(UnAuthorized::new);
+		 */
 		
-		return new UserSession(session.getUser().getId());
+		String jws = webRequest.getHeader("Authorization");
+		if (jws == null || jws.isEmpty()) {
+			throw new UnAuthorized();
+		}
+		
+		SecretKey secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(KEY));
+		
+		try {
+			Jws<Claims> claimsJws = Jwts.parser()
+					.verifyWith(secretKey)
+					.build()
+					.parseSignedClaims(jws);
+			
+			log.info(">>>>>>>>>>>>>>{}", claimsJws);
+			
+			String userId = claimsJws.getPayload().getSubject();
+			return new UserSession(Long.parseLong(userId));
+		} catch (JwtException e) {
+			throw new UnAuthorized();
+		}
+		
+//		return new UserSession(session.getUser().getId());
 	}
 }
