@@ -16,11 +16,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.testlog.domain.Session;
 import com.test.testlog.domain.User;
+import com.test.testlog.exception.AlreadyExistsException;
 import com.test.testlog.repository.SessionRepository;
 import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.Login;
+import com.test.testlog.request.SignUp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -155,6 +158,23 @@ class AuthControllerTest
 								.header("Authorization", session.getAccessToken() +"-asdf")
 								.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(MockMvcResultMatchers.status().isUnauthorized())
+				.andDo(MockMvcResultHandlers.print());
+	}
+	
+	@DisplayName("회원")
+	@Test
+	void signUp() throws Exception
+	{
+		// given
+		SignUp signUp = SignUp.builder()
+				.email("testlog@gmail.com")
+				.password("1234").name("testlog").build();
+		
+		// when.. then
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(objectMapper.writeValueAsString(signUp)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andDo(MockMvcResultHandlers.print());
 	}
 }

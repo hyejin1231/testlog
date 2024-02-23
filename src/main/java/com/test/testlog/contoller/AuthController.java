@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.test.testlog.config.data.AppConfig;
 import com.test.testlog.request.Login;
+import com.test.testlog.request.SignUp;
 import com.test.testlog.response.SessionResponse;
 import com.test.testlog.service.AuthService;
 
@@ -92,4 +93,9 @@ public class AuthController
 		return new SessionResponse(jws);
 	}
 	
+	@PostMapping("/auth/signup")
+	public void signup(@RequestBody SignUp signUp)
+	{
+		authService.signUp(signUp); // authService의 signUp 메서드를 만들건데 사실 request dto를  그대로 넘기면 안된다고 한다? TODO 안좋다는 이유 찾아보기
+	}
 }
