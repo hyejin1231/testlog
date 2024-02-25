@@ -1,5 +1,8 @@
 package com.test.testlog.service;
 
+import com.test.testlog.crypto.PasswordEncoder;
+import com.test.testlog.exception.InvalidSigningInformation;
+import com.test.testlog.request.Login;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +70,47 @@ class AuthServiceTest
 				.isInstanceOf(AlreadyExistsException.class)
 				.hasMessage("이미 가입된 이메일입니다.");
 	}
-	
+
+	@Test
+	@DisplayName("로그인 성공 테스트")
+	void loginTest() {
+		PasswordEncoder passwordEncoder = new PasswordEncoder();
+		// given
+		User signUp = User.builder()
+				.email("testlog@gmail.com")
+				.password(passwordEncoder.encrypt("1234"))
+				.name("testlog")
+				.build();
+
+		userRepository.save(signUp);
+
+		Login login = Login.builder().email("testlog@gmail.com").password("1234").build();
+
+		// when
+		Long userId = authService.signIn(login);
+
+		assertThat(userId).isNotNull();
+	}
+
+	@Test
+	@DisplayName("로그인 실패 테스트")
+	void loginFailTest() {
+		PasswordEncoder passwordEncoder = new PasswordEncoder();
+		// given
+		User signUp = User.builder()
+				.email("testlog@gmail.com")
+				.password(passwordEncoder.encrypt("1234"))
+				.name("testlog")
+				.build();
+
+		userRepository.save(signUp);
+
+		Login login = Login.builder().email("testlog@gmail.com").password("1231").build();
+
+		// when
+		assertThatThrownBy(() -> {
+			authService.signIn(login);
+		}).isInstanceOf(InvalidSigningInformation.class).hasMessage("아이디/비밀번호가 올바르지 않습니다.");
+	}
 	
 }
