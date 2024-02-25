@@ -3,14 +3,12 @@ package com.test.testlog.service;
 import java.util.Optional;
 
 import com.test.testlog.crypto.PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import com.test.testlog.crypto.ScryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.test.testlog.domain.Session;
 import com.test.testlog.domain.User;
 import com.test.testlog.exception.AlreadyExistsException;
-import com.test.testlog.exception.InvalidRequest;
 import com.test.testlog.exception.InvalidSigningInformation;
 import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.Login;
@@ -23,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService
 {
 	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 	
 	
 	@Transactional
@@ -38,7 +37,7 @@ public class AuthService
 
 		User user = userRepository.findByEmail(login.getEmail()).orElseThrow(InvalidSigningInformation::new);
 
-		PasswordEncoder passwordEncoder = new PasswordEncoder();
+//		PasswordEncoder passwordEncoder = new PasswordEncoder();
 //		SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
 		boolean matches = passwordEncoder.matches(login.getPassword(), user.getPassword());
 		if (!matches) {
@@ -58,7 +57,7 @@ public class AuthService
 		
 		// 2) 비밀번호 암호화
 //		SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
-		PasswordEncoder passwordEncoder = new PasswordEncoder();
+//		PasswordEncoder passwordEncoder = new PasswordEncoder();
 		String encryptedPassword = passwordEncoder.encrypt(signUp.getPassword());
 		
 		User user = User.builder().email(signUp.getEmail())

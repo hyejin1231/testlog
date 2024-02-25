@@ -1,9 +1,8 @@
 package com.test.testlog.service;
 
-import com.test.testlog.crypto.PasswordEncoder;
+import com.test.testlog.crypto.ScryptPasswordEncoder;
 import com.test.testlog.exception.InvalidSigningInformation;
 import com.test.testlog.request.Login;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,10 +13,12 @@ import com.test.testlog.domain.User;
 import com.test.testlog.exception.AlreadyExistsException;
 import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.SignUp;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
 @SpringBootTest
 class AuthServiceTest
 {
@@ -49,7 +50,7 @@ class AuthServiceTest
 		User user = userRepository.findAll().iterator().next();
 		assertThat(user.getEmail()).isEqualTo("testlog@gmail.com");
 		assertThat(user.getName()).isEqualTo("testlog");
-		assertThat(user.getPassword()).isNotEqualTo("1234");
+		assertThat(user.getPassword()).isEqualTo("1234");
 		assertThat(user.getPassword()).isNotEmpty();
 	}
 	
@@ -74,11 +75,10 @@ class AuthServiceTest
 	@Test
 	@DisplayName("로그인 성공 테스트")
 	void loginTest() {
-		PasswordEncoder passwordEncoder = new PasswordEncoder();
 		// given
 		User signUp = User.builder()
 				.email("testlog@gmail.com")
-				.password(passwordEncoder.encrypt("1234"))
+				.password("1234")
 				.name("testlog")
 				.build();
 
@@ -95,11 +95,11 @@ class AuthServiceTest
 	@Test
 	@DisplayName("로그인 실패 테스트")
 	void loginFailTest() {
-		PasswordEncoder passwordEncoder = new PasswordEncoder();
+		ScryptPasswordEncoder scryptPasswordEncoder = new ScryptPasswordEncoder();
 		// given
 		User signUp = User.builder()
 				.email("testlog@gmail.com")
-				.password(passwordEncoder.encrypt("1234"))
+				.password(scryptPasswordEncoder.encrypt("1234"))
 				.name("testlog")
 				.build();
 
