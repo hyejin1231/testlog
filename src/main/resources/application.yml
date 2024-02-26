@@ -9,7 +9,7 @@ spring:
         one-indexed-parameters: true
 
   datasource:
-    url: jdbc:h2:mem:testlog;NON_KEYWORDS=USER
+    url: jdbc:h2:mem:testlog;NON_KEYWORDS=USER # H2에서 이제 USER 를 TABLE로 사용할 수 없기 때문에 예약어로 USER 사용하지 말라고 지정해줘야함
     username: sa
     password:
     driver-class-name: org.h2.Driver
