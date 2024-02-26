@@ -1,6 +1,5 @@
 package com.test.testlog.contoller;
 
-import com.test.testlog.config.data.UserSession;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
@@ -38,20 +37,6 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-
-    // 인증 과정이 필요없는 페이지
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "welcome";
-    }
-    
-    // 인증 과정이 필요한 페이지
-    @GetMapping("/hello")
-    public Long hello(UserSession session)
-    {
-        log.info(">>> {}", session.getId());
-        return session.getId() ;
-    }
 
     /**
      * Response 응답 형태

@@ -1,4 +1,4 @@
-package com.test.testlog.config.data;
+package com.test.testlog.config;
 
 import java.util.Base64;
 
