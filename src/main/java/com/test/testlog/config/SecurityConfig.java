@@ -8,6 +8,13 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
@@ -38,7 +45,33 @@ public class SecurityConfig
 										.requestMatchers("/auth/login").permitAll()
 										.anyRequest().authenticated()
 				)
+				.formLogin(
+						form ->
+								form.loginPage("/auth/login")
+										.loginProcessingUrl("/auth/login")
+										.usernameParameter("username")
+										.passwordParameter("password")
+										.defaultSuccessUrl("/")
+				)
+				.userDetailsService(userDetailsService())
 				.csrf(AbstractHttpConfigurer::disable)  // TODO : CSRF 가 뭔지 ?
 				.build();
+	}
+	
+	@Bean
+	public UserDetailsService userDetailsService()
+	{
+		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+		UserDetails userDetails = User.withUsername("testlog")
+				.password("1234").roles("AMDIN").build();
+		manager.createUser(userDetails);
+		return manager;
+	}
+	
+	@Bean
+	public PasswordEncoder passwordEncoder()
+	{
+		return NoOpPasswordEncoder.getInstance(); // encoder 안하는 클래스
+//		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
 }
