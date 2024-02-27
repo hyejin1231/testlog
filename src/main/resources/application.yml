@@ -27,6 +27,5 @@ spring:
         format_sql: true
     defer-datasource-initialization: true
 
-
 testlog:
   secretKey: 6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8=
