@@ -45,13 +45,19 @@ public class SecurityConfig
 										.requestMatchers("/auth/login").permitAll()
 										.anyRequest().authenticated()
 				)
-				.formLogin(
+				.formLogin( // 로그인 폼 설정
 						form ->
 								form.loginPage("/auth/login")
 										.loginProcessingUrl("/auth/login")
 										.usernameParameter("username")
 										.passwordParameter("password")
 										.defaultSuccessUrl("/")
+				)
+				.rememberMe( // remember me
+						rm ->
+								rm.rememberMeParameter("remember")
+										.alwaysRemember(false)
+										.tokenValiditySeconds(2592000) // 30일
 				)
 				.userDetailsService(userDetailsService())
 				.csrf(AbstractHttpConfigurer::disable)  // TODO : CSRF 가 뭔지 ?
