@@ -27,5 +27,15 @@ spring:
         format_sql: true
     defer-datasource-initialization: true
 
+  session:
+    timeout: 86400
+
+
 testlog:
   secretKey: 6/XhJr9v+SVANc/Uj0H8I15S7JY8If0QqpEqFIFFeM8=
+
+server:
+  servlet:
+    session:
+      cookie:
+        max-age: 172800
