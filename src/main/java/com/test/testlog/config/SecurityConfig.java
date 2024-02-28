@@ -1,9 +1,12 @@
 package com.test.testlog.config;
 
+import java.io.IOException;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,18 +22,31 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.testlog.config.handler.Http401Handler;
+import com.test.testlog.config.handler.Http403Handler;
+import com.test.testlog.config.handler.LoginFailHandler;
 import com.test.testlog.repository.UserRepository;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity/*(debug = true) // debug : true, 좀 더 자세하게 설명 나옴 (운영 환경에서는 no)*/
+@RequiredArgsConstructor
 public class SecurityConfig
 {
+	private final ObjectMapper objectMapper;
 	
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer()
@@ -50,9 +66,9 @@ public class SecurityConfig
 								authorize
 										.requestMatchers("/auth/login").permitAll()
 										.requestMatchers("/auth/signup").permitAll()
-										.requestMatchers("/admin").access(new WebExpressionAuthorizationManager("hasRole('ADMIN')  AND hasAuthority('WRITE')"))
-//										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
-//										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
+//										.requestMatchers("/admin").access(new WebExpressionAuthorizationManager("hasRole('ADMIN')  AND hasAuthority('WRITE')"))
+										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
+										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
 										.anyRequest().authenticated()
 				)
 				.formLogin( // 로그인 폼 설정
@@ -62,6 +78,26 @@ public class SecurityConfig
 										.usernameParameter("username")
 										.passwordParameter("password")
 										.defaultSuccessUrl("/")
+										.failureHandler(new LoginFailHandler(objectMapper))
+				)
+				.exceptionHandling( // 예외 핸들러
+									e -> {
+										e.accessDeniedHandler(new Http403Handler(objectMapper));
+										e.authenticationEntryPoint(new Http401Handler(objectMapper));
+									}
+//						e -> {
+//							e.accessDeniedHandler(new AccessDeniedHandler()
+//							{
+//								@Override
+//								public void handle(HttpServletRequest request,
+//										HttpServletResponse response,
+//										AccessDeniedException accessDeniedException)
+//										throws IOException, ServletException
+//								{
+//									log.info("403", accessDeniedException);
+//								}
+//							});
+//						}
 				)
 				.rememberMe( // remember me
 						rm ->
@@ -87,16 +123,10 @@ public class SecurityConfig
 	@Bean
 	public UserDetailsService userDetailsService(UserRepository userRepository)
 	{
-		return new UserDetailsService()
-		{
-			@Override
-			public UserDetails loadUserByUsername(String username)
-					throws UsernameNotFoundException
-			{
-				com.test.testlog.domain.User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
-				
-				return new UserPrincipal(user);
-			}
+		return username -> {
+			com.test.testlog.domain.User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username + "을 찾을 수 없습니다."));
+			
+			return new UserPrincipal(user);
 		};
 	}
 	
