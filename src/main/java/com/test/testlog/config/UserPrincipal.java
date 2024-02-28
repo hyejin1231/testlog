@@ -14,7 +14,11 @@ public class UserPrincipal extends User
 	
 	public UserPrincipal(com.test.testlog.domain.User user)
 	{
-		super(user.getEmail(), user.getPassword(), List.of(new SimpleGrantedAuthority("ADMIN")));
+		super(user.getEmail(), user.getPassword(),
+			  List.of(
+					  new SimpleGrantedAuthority("ROLE_ADMIN"),
+					  new SimpleGrantedAuthority("WRITE"))
+		); // ROLE 이 있으면 역할, 없으면 권한
 		this.userId = user.getId();
 	}
 	

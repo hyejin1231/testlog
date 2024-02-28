@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.AntPathMatcher;
 
@@ -47,8 +48,11 @@ public class SecurityConfig
 				authorizeHttpRequests(
 						authorize ->
 								authorize
-										.requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
-										.requestMatchers(HttpMethod.POST,"/auth/signup").permitAll()
+										.requestMatchers("/auth/login").permitAll()
+										.requestMatchers("/auth/signup").permitAll()
+										.requestMatchers("/admin").access(new WebExpressionAuthorizationManager("hasRole('ADMIN')  AND hasAuthority('WRITE')"))
+//										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
+//										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
 										.anyRequest().authenticated()
 				)
 				.formLogin( // 로그인 폼 설정

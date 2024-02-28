@@ -11,4 +11,16 @@ public class MainController
 	{
 		return "메인 페이지 입니다.";
 	}
+	
+	@GetMapping("/user")
+	public String user()
+	{
+		return "사용자 페이지 입니다. 🙂";
+	}
+	
+	@GetMapping("/admin")
+	public String admin()
+	{
+		return "관리자 페이지 입니다. 😍";
+	}
 }
