@@ -16,7 +16,7 @@ public class UserPrincipal extends User
 	{
 		super(user.getEmail(), user.getPassword(),
 			  List.of(
-					  new SimpleGrantedAuthority("ROLE_USER")
+					  new SimpleGrantedAuthority("ROLE_ADMIN")
 //					  new SimpleGrantedAuthority("WRITE"))
 		)); // ROLE 이 있으면 역할, 없으면 권한
 		this.userId = user.getId();

@@ -9,6 +9,7 @@ import com.test.testlog.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,6 +49,7 @@ public class PostController {
      *  -> 서버에서 차라리 유연하게 대응하는 것이 좋은데 대신 코드를 잘 짜야한다 ^^;
      *  -> 한번에 일고라적으로 잘 처리되는 케이스는 없다. => 잘 관리하는 형태가 중요하다 !
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/posts")
     public void post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
         request.validate();
@@ -126,6 +128,7 @@ public class PostController {
      * @param postEdit
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping("/posts/{postId}")
     public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit)
     {
@@ -136,6 +139,7 @@ public class PostController {
      * 게시글 삭제
      * @param postId
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/posts/{postId}")
     public void delete(@PathVariable Long postId)
     {

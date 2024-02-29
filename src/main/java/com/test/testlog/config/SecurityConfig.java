@@ -2,6 +2,7 @@ package com.test.testlog.config;
 
 import java.io.IOException;
 
+import com.test.testlog.config.handler.LoginSuccessHandler;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,12 +77,13 @@ public class SecurityConfig
 				authorizeHttpRequests(
 						authorize ->
 								authorize
-										.requestMatchers("/auth/login").permitAll()
-										.requestMatchers("/auth/signup").permitAll()
+										.anyRequest().permitAll()
+//										.requestMatchers("/auth/login").permitAll()
+//										.requestMatchers("/auth/signup").permitAll()
 //										.requestMatchers("/admin").access(new WebExpressionAuthorizationManager("hasRole('ADMIN')  AND hasAuthority('WRITE')"))
 //										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
 //										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
-										.anyRequest().authenticated()
+//										.anyRequest().authenticated()
 				)
 				.addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
 //				.formLogin( // 로그인 폼 설정
@@ -127,7 +129,8 @@ public class SecurityConfig
 	{
 		EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter("/auth/login", objectMapper);
 		filter.setAuthenticationManager(authenticationManager());
-		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/")); // 성공에 대한 처리 핸들러
+		filter.setAuthenticationSuccessHandler(new LoginSuccessHandler(objectMapper));
+//		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/")); // 성공에 대한 처리 핸들러
 		filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
 		filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository()); // 이게 꼭 해줘야 세션이 정상 발급된다 !!
 		

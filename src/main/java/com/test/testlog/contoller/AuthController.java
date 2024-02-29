@@ -21,11 +21,11 @@ public class AuthController
 	
 	private final AppConfig appConfig;
 	
-	@GetMapping("/auth/login")
-	public String login()
-	{
-		return "로그인 페이지입니다.";
-	}
+//	@GetMapping("/auth/login")
+//	public String login()
+//	{
+//		return "로그인 페이지입니다.";
+//	}
 	
 	@PostMapping("/auth/signup")
 	public void signup(@RequestBody SignUp signUp)

@@ -3,3 +3,11 @@ GET http://localhost:8080/hello
 Content-Type: application/json
 Authorization: testlog
 
+### 게시글 작성
+POST http://localhost:8080/posts
+Content-Type: application/json
+
+{
+  "title": "제목",
+  "content": "내용"
+}
