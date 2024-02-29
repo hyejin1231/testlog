@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -69,6 +70,7 @@ class PostControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @DisplayName("글 작성 요청 시 DB에 값이 저장된다.")
     void posts3() throws Exception {
         // given
@@ -253,6 +255,7 @@ class PostControllerTest {
     }
     
     @Test
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @DisplayName("글 제목 수정")
     void edit() throws Exception
     {
@@ -271,8 +274,9 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
         
     }
-    
-    
+
+
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @DisplayName("게시글 삭제")
     @Test
     void delete() throws Exception
@@ -302,6 +306,7 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @Test
     @DisplayName("존재하지 않는 게시글 수정")
     void editNoPost() throws Exception {
@@ -316,6 +321,7 @@ class PostControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @Test
     @DisplayName("게시글 작성 시, 제목에 '바보' 단어는 포함될 수 없다.")
     void postsNotContainsTitleWord() throws Exception {

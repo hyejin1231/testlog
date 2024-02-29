@@ -18,6 +18,7 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
 import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -76,6 +77,7 @@ public class PostControllerDocTest {
                 ));
     }
 
+    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
     @Test
     @DisplayName("글 등록 테스트")
     void testRestDocs2() throws Exception {
