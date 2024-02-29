@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -51,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @EnableWebSecurity/*(debug = true) // debug : true, 좀 더 자세하게 설명 나옴 (운영 환경에서는 no)*/
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig
 {
@@ -77,8 +79,8 @@ public class SecurityConfig
 										.requestMatchers("/auth/login").permitAll()
 										.requestMatchers("/auth/signup").permitAll()
 //										.requestMatchers("/admin").access(new WebExpressionAuthorizationManager("hasRole('ADMIN')  AND hasAuthority('WRITE')"))
-										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
-										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
+//										.requestMatchers("/user").hasAnyRole("USER", "ADMIN") // ROLE_USER에서 ROLE 생략 가능
+//										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
 										.anyRequest().authenticated()
 				)
 				.addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
