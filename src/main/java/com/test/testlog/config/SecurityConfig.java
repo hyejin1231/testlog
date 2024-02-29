@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,10 +27,15 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
 import org.springframework.util.AntPathMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.testlog.config.filter.EmailPasswordAuthFilter;
 import com.test.testlog.config.handler.Http401Handler;
 import com.test.testlog.config.handler.Http403Handler;
 import com.test.testlog.config.handler.LoginFailHandler;
@@ -47,6 +55,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig
 {
 	private final ObjectMapper objectMapper;
+	
+	private final UserRepository userRepository;
 	
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer()
@@ -71,15 +81,16 @@ public class SecurityConfig
 										.requestMatchers("/admin").hasRole("ADMIN") // ROLE_ADMIN에서 ROLE 생략 가능
 										.anyRequest().authenticated()
 				)
-				.formLogin( // 로그인 폼 설정
-						form ->
-								form.loginPage("/auth/login")
-										.loginProcessingUrl("/auth/login")
-										.usernameParameter("username")
-										.passwordParameter("password")
-										.defaultSuccessUrl("/")
-										.failureHandler(new LoginFailHandler(objectMapper))
-				)
+				.addFilterBefore(emailPasswordAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+//				.formLogin( // 로그인 폼 설정
+//						form ->
+//								form.loginPage("/auth/login")
+//										.loginProcessingUrl("/auth/login")
+//										.usernameParameter("username")
+//										.passwordParameter("password")
+//										.defaultSuccessUrl("/")
+//										.failureHandler(new LoginFailHandler(objectMapper))
+//				)
 				.exceptionHandling( // 예외 핸들러
 									e -> {
 										e.accessDeniedHandler(new Http403Handler(objectMapper));
@@ -108,6 +119,33 @@ public class SecurityConfig
 				.csrf(AbstractHttpConfigurer::disable)  // TODO : CSRF 가 뭔지 ?
 				.build();
 	}
+	
+	@Bean
+	public EmailPasswordAuthFilter emailPasswordAuthFilter()
+	{
+		EmailPasswordAuthFilter filter = new EmailPasswordAuthFilter("/auth/login", objectMapper);
+		filter.setAuthenticationManager(authenticationManager());
+		filter.setAuthenticationSuccessHandler(new SimpleUrlAuthenticationSuccessHandler("/")); // 성공에 대한 처리 핸들러
+		filter.setAuthenticationFailureHandler(new LoginFailHandler(objectMapper));
+		filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository()); // 이게 꼭 해줘야 세션이 정상 발급된다 !!
+		
+		SpringSessionRememberMeServices rememberMeServices = new SpringSessionRememberMeServices();
+		rememberMeServices.setAlwaysRemember(true);
+		rememberMeServices.setValiditySeconds(3600 * 24 * 30);
+		filter.setRememberMeServices(rememberMeServices);
+		return filter;
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager()
+	{
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(userDetailsService(userRepository));
+		provider.setPasswordEncoder(passwordEncoder());
+		
+		return new ProviderManager(provider);
+	}
+	
 	
 	// InMemory방식
 //	@Bean
