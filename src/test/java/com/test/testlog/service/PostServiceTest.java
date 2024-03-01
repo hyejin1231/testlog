@@ -1,8 +1,11 @@
 package com.test.testlog.service;
 
+import com.test.testlog.annotation.TestlogMockUser;
 import com.test.testlog.domain.Post;
+import com.test.testlog.domain.User;
 import com.test.testlog.exception.PostNotFound;
 import com.test.testlog.repository.PostRepository;
+import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
@@ -32,24 +35,32 @@ class PostServiceTest {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @BeforeEach
      void clean() {
         // 데이터 클렌징 작업
         postRepository.deleteAllInBatch();
+        userRepository.deleteAll();
+
     }
 
     @Test
-    @WithMockUser(username = "testlog@gmail.com", password = "1234", roles = {"ADMIN"})
+    @TestlogMockUser
     @DisplayName("글 작성")
     void write() {
         // given
+        User user = User.builder().name("testlog").password("1234").email("testlog@gmail.com").build();
+        userRepository.save(user);
+
         PostCreate postCreate = PostCreate.builder()
                 .title("제목입니다.")
                 .content("내용입니다.")
                 .build();
 
         // when
-        postService.write(postCreate);
+        postService.write(postCreate, user.getId());
 
         // then
         assertThat(postRepository.count()).isEqualTo(1);

@@ -1,9 +1,12 @@
 package com.test.testlog.contoller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.testlog.annotation.TestlogMockUser;
 import com.test.testlog.domain.Post;
 import com.test.testlog.repository.PostRepository;
+import com.test.testlog.repository.UserRepository;
 import com.test.testlog.request.PostCreate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +44,7 @@ public class PostControllerDocTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-//    @BeforeEach
+    //    @BeforeEach
 //    void setUp(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentation) {
 //        // 자동주입이 아니라 테스트 전에 미리 mockMvc 세팅하는 작업
 //        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
@@ -77,7 +80,9 @@ public class PostControllerDocTest {
                 ));
     }
 
-    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
+
+//    @WithMockUser(username = "testlog@gmail.com" , roles = {"ADMIN"}, password = "1234") // 로그인 인증이 됐다고 가정
+    @TestlogMockUser
     @Test
     @DisplayName("글 등록 테스트")
     void testRestDocs2() throws Exception {
