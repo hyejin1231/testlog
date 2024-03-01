@@ -28,6 +28,9 @@ public class User
 	private String password;
 	private LocalDateTime createdAt;
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+	private List<Post> posts;
+
 	@Builder
 	public User(String name, String email, String password)
 	{

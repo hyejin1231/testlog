@@ -20,10 +20,15 @@ public class Post {
     @Lob
     private String content;
 
+    @ManyToOne
+    @JoinColumn
+    private User user;
+
     @Builder
-    public Post(String title, String content) {
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
     
     // setter 대신 change 메서드같은 걸 만들어서 사용하기
@@ -46,6 +51,10 @@ public class Post {
     {
         this.title = postEditor.getTitle();
         this.content = postEditor.getContent();
+    }
+
+    public Long getUserId() {
+        return this.user.getId();
     }
 }
 

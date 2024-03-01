@@ -1,5 +1,6 @@
 package com.test.testlog.contoller;
 
+import com.test.testlog.config.UserPrincipal;
 import com.test.testlog.request.PostCreate;
 import com.test.testlog.request.PostEdit;
 import com.test.testlog.request.PostSearch;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,9 +53,9 @@ public class PostController {
      */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/posts")
-    public void post(@RequestBody @Valid PostCreate request/*, BindingResult result*/) {
+    public void post(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody @Valid PostCreate request/*, BindingResult result*/) {
         request.validate();
-        postService.write(request);
+        postService.write(request, userPrincipal.getUserId());
         /*
         String title = request.getTitle();
         if (title == null || title.equals("")) {  // 빈 String 값은 ? 더 검증해야 할게 생각보다 더 있을걸?
@@ -139,7 +141,8 @@ public class PostController {
      * 게시글 삭제
      * @param postId
      */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') && hasPermission(#postId , 'POST', 'DELETE')")
     @DeleteMapping("/posts/{postId}")
     public void delete(@PathVariable Long postId)
     {
