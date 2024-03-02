@@ -1,6 +1,6 @@
 package com.test.testlog.config;
 
-import com.test.testlog.repository.PostRepository;
+import com.test.testlog.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

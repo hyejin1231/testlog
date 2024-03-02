@@ -1,7 +1,7 @@
-package com.test.testlog.repository;
+package com.test.testlog.repository.post;
 
 import com.test.testlog.domain.Post;
-import com.test.testlog.request.PostSearch;
+import com.test.testlog.request.post.PostSearch;
 
 import java.util.List;
 

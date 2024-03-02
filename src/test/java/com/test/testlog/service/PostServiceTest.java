@@ -4,11 +4,11 @@ import com.test.testlog.annotation.TestlogMockUser;
 import com.test.testlog.domain.Post;
 import com.test.testlog.domain.User;
 import com.test.testlog.exception.PostNotFound;
-import com.test.testlog.repository.PostRepository;
+import com.test.testlog.repository.post.PostRepository;
 import com.test.testlog.repository.UserRepository;
-import com.test.testlog.request.PostCreate;
-import com.test.testlog.request.PostEdit;
-import com.test.testlog.request.PostSearch;
+import com.test.testlog.request.post.PostCreate;
+import com.test.testlog.request.post.PostEdit;
+import com.test.testlog.request.post.PostSearch;
 import com.test.testlog.response.PostResponse;
 
 import org.assertj.core.api.Assertions;
@@ -17,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package com.test.testlog.request;
+package com.test.testlog.request.post;
 
 import com.test.testlog.exception.InvalidRequest;
 import jakarta.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.test.testlog.request;
+package com.test.testlog.request.post;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

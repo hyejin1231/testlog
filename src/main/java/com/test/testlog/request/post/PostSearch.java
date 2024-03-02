@@ -1,4 +1,4 @@
-package com.test.testlog.request;
+package com.test.testlog.request.post;
 
 import lombok.Builder;
 import lombok.Data;

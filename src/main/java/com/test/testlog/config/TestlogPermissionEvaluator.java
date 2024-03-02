@@ -2,7 +2,7 @@ package com.test.testlog.config;
 
 import com.test.testlog.domain.Post;
 import com.test.testlog.exception.PostNotFound;
-import com.test.testlog.repository.PostRepository;
+import com.test.testlog.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.PermissionEvaluator;

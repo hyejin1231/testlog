@@ -1,9 +1,9 @@
 package com.test.testlog.contoller;
 
 import com.test.testlog.config.UserPrincipal;
-import com.test.testlog.request.PostCreate;
-import com.test.testlog.request.PostEdit;
-import com.test.testlog.request.PostSearch;
+import com.test.testlog.request.post.PostCreate;
+import com.test.testlog.request.post.PostEdit;
+import com.test.testlog.request.post.PostSearch;
 import com.test.testlog.response.PostResponse;
 import com.test.testlog.service.PostService;
 
