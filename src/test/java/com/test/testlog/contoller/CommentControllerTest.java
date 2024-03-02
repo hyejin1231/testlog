@@ -8,6 +8,7 @@ import com.test.testlog.repository.UserRepository;
 import com.test.testlog.repository.comment.CommentRepository;
 import com.test.testlog.repository.post.PostRepository;
 import com.test.testlog.request.comment.CommentCreate;
+import com.test.testlog.request.comment.CommentDelete;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -90,5 +91,44 @@ class CommentControllerTest {
         assertThat(savedComment.getContent()).isEqualTo("테스트 댓글 !!!!!!!!!!!!!!!!!!!!!!!");
         assertThat(savedComment.getPassword()).isNotEqualTo("1234567");
         assertTrue(passwordEncoder.matches("1234567", savedComment.getPassword()));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 성공 테스트")
+    void delete() throws Exception {
+        // given
+        User user = User.builder()
+                .name("testlog")
+                .password("1234")
+                .email("testlog@gmail.com")
+                .build();
+        User saveUser = userRepository.save(user);
+
+        Post post = Post.builder()
+                .title("테스트 제목")
+                .content("테스트 내용")
+                .user(saveUser)
+                .build();
+        Post savePost = postRepository.save(post);
+
+        String encryptedPassword = passwordEncoder.encode("123456");
+        Comment comment = Comment.builder()
+                .author("testUser")
+                .password(encryptedPassword)
+                .content("으하ㅏ하ㅏ하핳하하하ㅏ하하하ㅏㅎㅎㅎ핳하하")
+                .build();
+        comment.setPost(savePost);
+        Comment savedComment = commentRepository.save(comment);
+
+        CommentDelete commentDelete = new CommentDelete("123456");
+
+        // expected
+        mockMvc.perform(MockMvcRequestBuilders.post("/comments/{commentId}/delete", savedComment.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentDelete))
+        )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
     }
 }
