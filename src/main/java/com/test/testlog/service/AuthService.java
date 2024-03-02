@@ -2,16 +2,12 @@ package com.test.testlog.service;
 
 import java.util.Optional;
 
-import com.test.testlog.crypto.PasswordEncoder;
-import com.test.testlog.crypto.ScryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.test.testlog.domain.User;
 import com.test.testlog.exception.AlreadyExistsException;
-import com.test.testlog.exception.InvalidSigningInformation;
 import com.test.testlog.repository.UserRepository;
-import com.test.testlog.request.Login;
 import com.test.testlog.request.SignUp;
 
 import lombok.RequiredArgsConstructor;
@@ -21,31 +17,10 @@ import lombok.RequiredArgsConstructor;
 public class AuthService
 {
 	private final UserRepository userRepository;
+	
 	private final PasswordEncoder passwordEncoder;
 	
-	
-	@Transactional
-	public Long signIn(Login login)
-	{
-		// 로그인 처리
-//		User user = userRepository.findByEmailAndPassword(login.getEmail(), login.getPassword()).orElseThrow(InvalidSigningInformation::new);
-		
-		// 로그인 처리 되면 세션 발급
-//		Session session = user.addSession();
-
-//		return session.getAccessToken();
-
-		User user = userRepository.findByEmail(login.getEmail()).orElseThrow(InvalidSigningInformation::new);
-
-//		PasswordEncoder passwordEncoder = new PasswordEncoder();
-//		SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
-		boolean matches = passwordEncoder.matches(login.getPassword(), user.getPassword());
-		if (!matches) {
-			throw new InvalidSigningInformation();
-		}
-
-		return user.getId();
-	}
+	// end::[]]
 	
 	public void signUp(SignUp signUp)
 	{
@@ -55,10 +30,7 @@ public class AuthService
 			throw new AlreadyExistsException();
 		}
 		
-		// 2) 비밀번호 암호화
-//		SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder(16, 8, 1, 32, 64);
-//		PasswordEncoder passwordEncoder = new PasswordEncoder();
-		String encryptedPassword = passwordEncoder.encrypt(signUp.getPassword());
+		String encryptedPassword = passwordEncoder.encode(signUp.getPassword());
 		
 		User user = User.builder().email(signUp.getEmail())
 				.name(signUp.getName()).password(encryptedPassword).build();

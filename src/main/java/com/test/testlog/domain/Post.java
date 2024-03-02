@@ -3,6 +3,8 @@ package com.test.testlog.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 /**
  * 여기에는 서비스의 정책을 넣지 마세요 !! 절대 !!
  */
@@ -20,10 +22,18 @@ public class Post {
     @Lob
     private String content;
 
+    @ManyToOne
+    @JoinColumn
+    private User user;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "post")
+    private List<Comment> comments;
+
     @Builder
-    public Post(String title, String content) {
+    public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
+        this.user = user;
     }
     
     // setter 대신 change 메서드같은 걸 만들어서 사용하기
@@ -46,6 +56,16 @@ public class Post {
     {
         this.title = postEditor.getTitle();
         this.content = postEditor.getContent();
+    }
+
+    public Long getUserId() {
+        return this.user.getId();
+    }
+
+
+    public void addComment(Comment comment) {
+       comment.setPost(this);
+        this.comments.add(comment);
     }
 }
 

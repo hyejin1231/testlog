@@ -1,11 +1,43 @@
-### 로그인
+### 회원 가입
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+  "name": "testlog",
+  "email" : "testlog@gmail.com",
+  "password": "1234"
+}
+
+### 로그인 성공 (폼 로그인)
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=testlog@gmail.com&password=1234&remember=1
+
+### 로그인 실패 (폼 로그인)
+POST http://localhost:8080/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=testlog111@gmail.com&password=1234&remember=1
+
+### 로그인 (json으로 로그인)
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "testlog@gmail.com",
+  "email" : "testlog@gmail.com",
   "password" : "1234"
 }
+
+### 메인 페이지
+GET http://localhost:8080
+
+### 사용자 페이지
+GET http://localhost:8080/user
+
+### 관리자 페이지
+GET http://localhost:8080/admin
+
 
 ### 인증 페이지 요청
 GET http://localhost:8080/hello

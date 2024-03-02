@@ -2,11 +2,14 @@ package com.test.testlog.service;
 
 import com.test.testlog.domain.Post;
 import com.test.testlog.domain.PostEditor;
+import com.test.testlog.domain.User;
 import com.test.testlog.exception.PostNotFound;
-import com.test.testlog.repository.PostRepository;
-import com.test.testlog.request.PostCreate;
-import com.test.testlog.request.PostEdit;
-import com.test.testlog.request.PostSearch;
+import com.test.testlog.exception.UserNotFind;
+import com.test.testlog.repository.post.PostRepository;
+import com.test.testlog.repository.UserRepository;
+import com.test.testlog.request.post.PostCreate;
+import com.test.testlog.request.post.PostEdit;
+import com.test.testlog.request.post.PostSearch;
 import com.test.testlog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +27,16 @@ import java.util.stream.Collectors;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public void write(PostCreate postCreate) {
+    public void write(PostCreate postCreate, Long userId) {
+
+        User user = userRepository.findById(userId).orElseThrow(UserNotFind::new);
+
         Post post = Post.builder()
                 .title(postCreate.getTitle())
                 .content(postCreate.getContent())
+                .user(user)
                 .build();
         postRepository.save(post);
     }
